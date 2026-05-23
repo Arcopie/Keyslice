@@ -46,6 +46,8 @@ jobs:
     # renovate: depName=ubuntu
     runs-on: ubuntu-22.04
     timeout-minutes: 10
+    permissions: 
+      contents: read
     env:
       # renovate: datasource=github-tags depName=danmar/cppcheck versioning=loose
       CPPCHECK_VER: "2.19.1"
@@ -53,7 +55,8 @@ jobs:
       - name: Checkout repo
         # renovate: datasource=github-tags depName=actions/checkout versioning=loose
         uses: actions/checkout@v6.0.2
-
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run cppcheck
         uses: ./.github/actions/cppcheck
 
@@ -62,6 +65,8 @@ jobs:
     # renovate: depName=ubuntu
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    permissions: 
+      contents: read
     env:
       CC: clang-18
       CXX: clang++-18
@@ -70,6 +75,8 @@ jobs:
       - name: Checkout repo
         # renovate: datasource=github-tags depName=actions/checkout versioning=loose
         uses: actions/checkout@v6.0.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run clang-tidy
         uses: ./.github/actions/clang-tidy
@@ -181,6 +188,9 @@ jobs:
       - name: Checkout repo
         # renovate: datasource=github-tags depName=actions/checkout versioning=loose
         uses: actions/checkout@v6.0.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 1
 
       - name: Set timestamp, zip name, repo visibility
         env:
