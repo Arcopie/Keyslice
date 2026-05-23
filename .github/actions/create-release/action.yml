@@ -38,5 +38,6 @@ runs:
       uses: softprops/action-gh-release@v2.5.0
       if: startsWith(github.ref, 'refs/tags/')
       with:
+        token: ${{ secrets.GITHUB_TOKEN }}
         files: |
           ${{ env.ZIP_NAME }}_${{ env.TAG_NAME }}.zip
