@@ -1,4 +1,4 @@
-#Keyslice
+# Keyslice
 
 Not your usual keyboard game. In this game you have to type the exact key you want to slice towards.
 Slice who? Your enemies, there's a lot of 'em. The game area consists of blocks numbered QWERTY...BNM.
