@@ -1,8 +1,12 @@
+// #ifndef EXAMPLE_H
+// #define EXAMPLE_H
 //
-// Created by AdminArcopie on 4/11/2026.
+// class Example {
+//     int x = 1;
+//     int y = 2;
+//     void f() const;
+// public:
+//     void g();
+// };
 //
-
-#ifndef OOP_EXAMPLE_H
-#define OOP_EXAMPLE_H
-
-#endif //OOP_EXAMPLE_H
+// #endif // EXAMPLE_H

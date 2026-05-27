@@ -1,4 +1,5 @@
-Titlu: Keyslice
+# Keyslice
+
 Not your usual keyboard game. In this game you have to type the exact key you want to slice towards.
 Slice who? Your enemies, there's a lot of 'em. The game area consists of blocks numbered QWERTY...BNM.
 In order to stay alive you need to be moving constantly, they kill you only if you're standing still.
