@@ -78,7 +78,7 @@ void Joc::adaugaInamic() {
 };
 
 bool Joc::proceseazaTasta(int tasta) {
-  if (tasta == 27 || tasta == EOF) {
+  if (tasta == 27 || tasta == 24 || tasta == EOF) { // 27=ESC, 24=Ctrl+X
     ruleaza = false;
     return false;
   }
@@ -125,13 +125,13 @@ void Joc::mutaEntitati() {
 void Joc::afiseazaEcran(int vieti, int scorTotal) const {
   clearScreen();
   std::cout << "SLICE GAME" << std::endl;
-  std::cout << "Vieti: " << vieti
-            << " | Scor runda: " << jucator.getScor()
+  std::cout << "Vieti: " << vieti << " | Scor runda: " << jucator.getScor()
             << " | Scor total: " << scorTotal + jucator.getScor()
             << " | Sliceuri: " << jucator.getSliceuri()
             << " | Entitati: " << EntitateJoc::getContor() << std::endl;
   std::cout << "Apasa litera/cifra = teleportare + slice" << std::endl;
-  std::cout << "ESC = iesire | ! = periculos | B = MiniBoss" << std::endl;
+  std::cout << "ESC / Ctrl+X = iesire | ! = periculos | B = MiniBoss"
+            << std::endl;
 
   // dynamic_cast pentru info specifice MiniBoss
   for (const auto &e : entitati) {
@@ -210,7 +210,7 @@ void Joc::ruleazaJocul(int vieti, int scorTotal) {
     std::cout << "GAME OVER! Un inamic te-a atins!" << std::endl;
     std::cout << "Scor runda: " << jucator.getScor() << std::endl;
   }
-  sleepMs(2000);
+  sleepMs(500);
 }
 
 bool Joc::esteGameOver() const { return gameOver; }
