@@ -66,15 +66,16 @@ void Joc::adaugaInamic() {
   if (nrNormali >= 8)
     return;
 
-  const char simboluri[] = "EFGHIJKL";
-  char sim = simboluri[(nextId - 1) % 8];
   // la fiecare al 3-lea inamic normal, spawnez unul rapid in loc
   if (nextId % 3 == 0 && jucator.getScor() >= 50) {
     adaugaInamicRapid();
-  } else
+  } else {
+    const char simboluri[] = "EFGHIJKL";
+    char sim = simboluri[(nextId - 1) % 8];
     entitati.push_back(
         std::make_shared<InamicNormal>(nextId++, spawneazaPozitie(), sim));
-}
+  }
+};
 
 bool Joc::proceseazaTasta(int tasta) {
   if (tasta == 27 || tasta == EOF) {
@@ -121,10 +122,12 @@ void Joc::mutaEntitati() {
     e->muta(matrice.getLinii(), matrice.getColoane());
 }
 
-void Joc::afiseazaEcran() const {
+void Joc::afiseazaEcran(int vieti, int scorTotal) const {
   clearScreen();
   std::cout << "SLICE GAME" << std::endl;
-  std::cout << "Scor: " << jucator.getScor()
+  std::cout << "Vieti: " << vieti
+            << " | Scor runda: " << jucator.getScor()
+            << " | Scor total: " << scorTotal + jucator.getScor()
             << " | Sliceuri: " << jucator.getSliceuri()
             << " | Entitati: " << EntitateJoc::getContor() << std::endl;
   std::cout << "Apasa litera/cifra = teleportare + slice" << std::endl;
@@ -144,13 +147,13 @@ void Joc::afiseazaEcran() const {
   std::cout << std::endl;
 }
 
-void Joc::ruleazaJocul() {
+void Joc::ruleazaJocul(int vieti, int scorTotal) {
   srand((unsigned)time(nullptr));
   ruleaza = true;
   gameOver = false;
   ultimSpawnPericulos = std::chrono::steady_clock::now();
   adaugaInamic();
-  afiseazaEcran();
+  afiseazaEcran(vieti, scorTotal);
 
   while (ruleaza) {
     bool trebuieRedesnat = false;
@@ -198,19 +201,20 @@ void Joc::ruleazaJocul() {
     }
 
     if (trebuieRedesnat)
-      afiseazaEcran();
+      afiseazaEcran(vieti, scorTotal);
     sleepMs(100);
   }
 
-  afiseazaEcran();
+  afiseazaEcran(vieti, scorTotal);
   if (gameOver) {
     std::cout << "GAME OVER! Un inamic te-a atins!" << std::endl;
-    std::cout << "Scor final: " << jucator.getScor() << std::endl;
+    std::cout << "Scor runda: " << jucator.getScor() << std::endl;
   }
   sleepMs(2000);
 }
 
 bool Joc::esteGameOver() const { return gameOver; }
+int Joc::getScorRunda() const { return jucator.getScor(); }
 
 std::ostream &operator<<(std::ostream &os, const Joc &j) {
   os << "Joc: " << j.jucator << " | " << j.timer;

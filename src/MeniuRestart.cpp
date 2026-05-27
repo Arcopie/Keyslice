@@ -2,11 +2,16 @@
 #include "../include/Utils.h"
 #include <iostream>
 
-MeniuRestart::MeniuRestart() : nrRestartari(0) {}
+MeniuRestart::MeniuRestart() : nrRestartari(0), vieti(3), scorTotal(0) {}
 
-void MeniuRestart::afiseazaOptiuni() {
+void MeniuRestart::afiseazaOptiuni(int vietiRamase) {
     std::cout << std::endl;
-    std::cout << "Apasa [R] pentru a reincepe jocul" << std::endl;
+    std::cout << "Vieti ramase: " << vietiRamase << std::endl;
+    if (vietiRamase > 0) {
+        std::cout << "Apasa [R] pentru a reincepe jocul" << std::endl;
+    } else {
+        std::cout << "Nu mai ai vieti! Nu poti da restart." << std::endl;
+    }
     std::cout << "Apasa [ESC] pentru a iesi" << std::endl;
 }
 
@@ -14,7 +19,7 @@ bool MeniuRestart::asteaptaDecizie() {
     while (true) {
         if (tastaDisponibila()) {
             int tasta = citesteTasta();
-            if (tasta == 'r' || tasta == 'R') {
+            if ((tasta == 'r' || tasta == 'R') && vieti > 0) {
                 nrRestartari++;
                 return true;
             }
@@ -25,15 +30,30 @@ bool MeniuRestart::asteaptaDecizie() {
 }
 
 bool MeniuRestart::gestioneazaJoc(Joc& joc) {
-    joc.ruleazaJocul();
+    joc.ruleazaJocul(vieti, scorTotal);
     if (joc.esteGameOver()) {
-        afiseazaOptiuni();
+        scorTotal += joc.getScorRunda();
+        vieti--;
+        afiseazaOptiuni(vieti);
+        if (vieti <= 0) {
+            // nu mai poate da restart
+            std::cout << std::endl;
+            std::cout << "=== SCOR TOTAL FINAL: " << scorTotal
+                      << " ===" << std::endl;
+            sleepMs(3000);
+            return false;
+        }
         return asteaptaDecizie();
     }
     return false;
 }
 
+int MeniuRestart::getVieti() const { return vieti; }
+int MeniuRestart::getScorTotal() const { return scorTotal; }
+
 std::ostream& operator<<(std::ostream& os, const MeniuRestart& m) {
-    os << "MeniuRestart[restartari: " << m.nrRestartari << "]";
+    os << "MeniuRestart[restartari: " << m.nrRestartari
+       << " | vieti: " << m.vieti
+       << " | scor total: " << m.scorTotal << "]";
     return os;
 }

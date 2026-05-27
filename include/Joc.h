@@ -1,40 +1,41 @@
 #pragma once
-#include "Matrice.h"
-#include "Jucator.h"
 #include "EntitateJoc.h"
+#include "Jucator.h"
+#include "Matrice.h"
 #include "Timer.h"
-#include <vector>
-#include <memory>
 #include <chrono>
+#include <memory>
 #include <ostream>
+#include <vector>
 
 // compune Matrice, Jucator, Timer si un vector de entitati polimorfice
 class Joc {
-    Matrice matrice;
-    Jucator jucator;
-    std::vector<std::shared_ptr<EntitateJoc>> entitati;
-    Timer timer;
-    std::chrono::steady_clock::time_point ultimSpawnPericulos;
-    bool ruleaza;
-    bool gameOver;
-    int nextId;
-    int totalOmorati;
-    int urmatorPragMiniBoss; // urmatorul scor la care apare mini-boss
+  Matrice matrice;
+  Jucator jucator;
+  std::vector<std::shared_ptr<EntitateJoc>> entitati;
+  Timer timer;
+  std::chrono::steady_clock::time_point ultimSpawnPericulos;
+  bool ruleaza;
+  bool gameOver;
+  int nextId;
+  int totalOmorati;
+  int urmatorPragMiniBoss; // urmatorul scor la care apare mini-boss
 
-    void curataMortii();
-    void adaugaInamicPericulos();
-    void adaugaMiniBoss();
-    void adaugaInamicRapid();
-    Pozitie spawneazaPozitie(); // gaseste pozitie random departe de jucator
+  void curataMortii();
+  void adaugaInamicPericulos();
+  void adaugaMiniBoss();
+  void adaugaInamicRapid();
+  Pozitie spawneazaPozitie(); // gaseste pozitie random departe de jucator
 public:
-    Joc();
+  Joc();
 
-    void adaugaInamic();
-    bool proceseazaTasta(int tasta);
-    void mutaEntitati();
-    void afiseazaEcran() const;
-    void ruleazaJocul();
+  void adaugaInamic();
+  bool proceseazaTasta(int tasta);
+  void mutaEntitati();
+  void afiseazaEcran(int vieti, int scorTotal) const;
+  void ruleazaJocul(int vieti, int scorTotal);
 
-    [[nodiscard]] bool esteGameOver() const;
-    friend std::ostream& operator<<(std::ostream& os, const Joc& j);
+  [[nodiscard]] bool esteGameOver() const;
+  [[nodiscard]] int getScorRunda() const;
+  friend std::ostream &operator<<(std::ostream &os, const Joc &j);
 };
