@@ -40,7 +40,7 @@ bool MeniuRestart::gestioneazaJoc(Joc &joc) {
       // nu mai poate da restart
       std::cout << std::endl;
       std::cout << "  SCOR TOTAL FINAL: " << scorTotal << " " << std::endl;
-      sleepMs(3000);
+      sleepMs(500);
       return false;
     }
     return asteaptaDecizie();

@@ -37,6 +37,8 @@ int main() {
     }
 
     std::cout << meniu << std::endl;
+    std::cout << "Vieti ramase: " << meniu.getVieti()
+              << " | Scor total: " << meniu.getScorTotal() << std::endl;
   } catch (const ExceptieJoc &e) {
     std::cerr << "Eroare joc: " << e.what() << std::endl;
     return 1;
