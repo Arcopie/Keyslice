@@ -69,10 +69,9 @@ void Joc::adaugaInamic() {
     const char simboluri[] = "EFGHIJKL";
     char sim = simboluri[(nextId - 1) % 8];
     // la fiecare al 3-lea inamic normal, spawnez unul rapid in loc
-    if (nextId % 3 == 0 && jucator.getScor() >= 50)
-        entitati.push_back(
-            std::make_shared<InamicRapid>(nextId++, spawneazaPozitie(), sim));
-    else
+    if (nextId % 3 == 0 && jucator.getScor() >= 50) {
+        adaugaInamicRapid();
+    } else
         entitati.push_back(
             std::make_shared<InamicNormal>(nextId++, spawneazaPozitie(), sim));
 }

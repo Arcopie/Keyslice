@@ -12,8 +12,8 @@ Matrice::Matrice(int linii, int coloane) : linii(linii), coloane(coloane) {
 }
 
 void Matrice::construiesteGrila() {
-    // rand 0: qwerty, rand 1: asdf, rand 2: zxcv, rand 3: 1234...0
-    const char taste[] = "qwertyuiopasdfghjkl;zxcvbnm,./1234567890";
+    // rand 0: 1234...0, rand 1: qwerty, rand 2: asdf, rand 3: zxcv
+    const char taste[] = "1234567890qwertyuiopasdfghjkl;zxcvbnm,./";
     int nrTaste = (int)(sizeof(taste) - 1);
     for (int i = 0; i < linii; i++) {
         grila.emplace_back();
