@@ -257,8 +257,11 @@ void Joc::tick() {
   }
 }
 
+// cppcheck-suppress unusedFunction
 const Matrice &Joc::getMatrice() const { return matrice; }
+// cppcheck-suppress unusedFunction
 const Jucator &Joc::getJucator() const { return jucator; }
+// cppcheck-suppress unusedFunction
 const std::vector<std::shared_ptr<EntitateJoc>> &Joc::getEntitati() const {
   return entitati;
 }

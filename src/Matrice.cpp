@@ -28,6 +28,7 @@ void Matrice::construiesteGrila() {
 int Matrice::getLinii() const { return linii; }
 int Matrice::getColoane() const { return coloane; }
 
+// cppcheck-suppress unusedFunction
 char Matrice::getTasta(int lin, int col) const {
     return grila[lin][col].getSimbol();
 }
