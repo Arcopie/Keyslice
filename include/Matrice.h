@@ -22,6 +22,9 @@ public:
     [[nodiscard]] int getLinii() const;
     [[nodiscard]] int getColoane() const;
 
+    // simbolul tastei dintr-o celula (pentru renderer)
+    [[nodiscard]] char getTasta(int lin, int col) const;
+
     void afiseaza(const Jucator& jucator,
                   const std::vector<std::shared_ptr<EntitateJoc>>& entitati) const;
     [[nodiscard]] Pozitie pozitieRandom() const;

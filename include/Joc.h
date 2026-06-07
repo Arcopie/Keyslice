@@ -35,6 +35,15 @@ public:
   void afiseazaEcran(int vieti, int scorTotal) const;
   void ruleazaJocul(int vieti, int scorTotal);
 
+  // avanseaza jocul cu un pas (spawn + miscare pe baza timerelor), fara render;
+  // apelat din bucla SFML in locul lui ruleazaJocul
+  void tick();
+
+  // getteri read-only pentru renderer
+  [[nodiscard]] const Matrice& getMatrice() const;
+  [[nodiscard]] const Jucator& getJucator() const;
+  [[nodiscard]] const std::vector<std::shared_ptr<EntitateJoc>>& getEntitati() const;
+
   [[nodiscard]] bool esteGameOver() const;
   [[nodiscard]] int getScorRunda() const;
   friend std::ostream &operator<<(std::ostream &os, const Joc &j);

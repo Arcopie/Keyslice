@@ -48,6 +48,12 @@ bool MeniuRestart::gestioneazaJoc(Joc &joc) {
   return false;
 }
 
+void MeniuRestart::inregistreazaRunda(int scorRunda) {
+  scorTotal += scorRunda;
+  if (vieti > 0)
+    vieti--;
+}
+
 int MeniuRestart::getVieti() const { return vieti; }
 int MeniuRestart::getScorTotal() const { return scorTotal; }
 

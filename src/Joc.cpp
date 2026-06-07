@@ -213,6 +213,56 @@ void Joc::ruleazaJocul(int vieti, int scorTotal) {
   sleepMs(500);
 }
 
+// un singur pas de joc fara render/input - pentru bucla SFML.
+// reproduce logica din ruleazaJocul (spawn + miscare pe baza timerelor).
+void Joc::tick() {
+  if (gameOver)
+    return;
+
+  // prima rulare: porneste timerul de periculos si spawneaza primul inamic
+  if (!ruleaza) {
+    ruleaza = true;
+    ultimSpawnPericulos = std::chrono::steady_clock::now();
+    adaugaInamic();
+  }
+
+  if (timer.trebuieSpawn()) {
+    adaugaInamic();
+    timer.resetSpawn();
+  }
+
+  double secDePericulos =
+      std::chrono::duration<double>(std::chrono::steady_clock::now() -
+                                    ultimSpawnPericulos)
+          .count();
+  if (secDePericulos >= 2.0) {
+    adaugaInamicPericulos();
+    ultimSpawnPericulos = std::chrono::steady_clock::now();
+  }
+
+  curataMortii();
+
+  if (timer.trebuieMiscare()) {
+    mutaEntitati();
+    timer.resetMiscare();
+    if (jucator.atingeEntitate(entitati)) {
+      gameOver = true;
+      ruleaza = false;
+    }
+  }
+
+  if (jucator.atingeEntitate(entitati)) {
+    gameOver = true;
+    ruleaza = false;
+  }
+}
+
+const Matrice &Joc::getMatrice() const { return matrice; }
+const Jucator &Joc::getJucator() const { return jucator; }
+const std::vector<std::shared_ptr<EntitateJoc>> &Joc::getEntitati() const {
+  return entitati;
+}
+
 bool Joc::esteGameOver() const { return gameOver; }
 int Joc::getScorRunda() const { return jucator.getScor(); }
 

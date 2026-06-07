@@ -28,6 +28,10 @@ void Matrice::construiesteGrila() {
 int Matrice::getLinii() const { return linii; }
 int Matrice::getColoane() const { return coloane; }
 
+char Matrice::getTasta(int lin, int col) const {
+    return grila[lin][col].getSimbol();
+}
+
 void Matrice::afiseaza(const Jucator& jucator,
     const std::vector<std::shared_ptr<EntitateJoc>>& entitati) const {
     std::cout << "  +-";

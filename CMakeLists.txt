@@ -104,3 +104,39 @@ endif()
 copy_files(FILES tastatura.txt DIRECTORY assets COPY_TO_DESTINATION TARGET_NAME ${MAIN_EXECUTABLE_NAME})
 # copy_files(FILES tastatura.txt config.json DIRECTORY images sounds COPY_TO_DESTINATION TARGET_NAME ${MAIN_EXECUTABLE_NAME})
 # copy_files(DIRECTORY images sounds COPY_TO_DESTINATION TARGET_NAME ${MAIN_EXECUTABLE_NAME})
+
+###############################################################################
+
+# Interfata grafica SFML 3 - compilata doar local, NU in GitHub Actions:
+# pe runnerele CI nu exista server grafic si lipsesc dependentele de sistem ale
+# SFML (X11/GL/udev), iar binarul ruleaza headless cu input din tastatura.txt.
+# Variabila GITHUB_ACTIONS este pasata din .github/actions/configure-cmake.
+if(NOT GITHUB_ACTIONS)
+    include(FetchContent)
+
+    # nu avem nevoie de audio/network -> build mai rapid, fara OpenAL
+    set(SFML_BUILD_AUDIO OFF CACHE BOOL "" FORCE)
+    set(SFML_BUILD_NETWORK OFF CACHE BOOL "" FORCE)
+
+    # poate fi suprascris cu un SFML pre-descarcat prin env var SFML3_DIR
+    # (vezi cmake/Options.cmake) sau FETCHCONTENT_SOURCE_DIR_SFML
+    FetchContent_Declare(
+        SFML
+        GIT_REPOSITORY https://github.com/SFML/SFML.git
+        GIT_TAG        3.0.2 # SFML 3.0.x @ 2025
+        GIT_SHALLOW    1
+        GIT_PROGRESS   ON
+        SYSTEM
+    )
+    FetchContent_MakeAvailable(SFML)
+
+    target_sources(${MAIN_EXECUTABLE_NAME}
+        PRIVATE
+            src/SFMLUtils.cpp
+            src/GameRenderer.cpp
+            src/MenuScreen.cpp
+    )
+    target_link_libraries(${MAIN_EXECUTABLE_NAME}
+        PRIVATE SFML::Graphics SFML::Window SFML::System
+    )
+endif()
