@@ -40,9 +40,9 @@ public:
   [[maybe_unused]] void tick();
 
   // getteri read-only pentru renderer
-  [[nodiscard]] const Matrice& getMatrice() const;
-  [[nodiscard]] const Jucator& getJucator() const;
-  [[nodiscard]] const std::vector<std::shared_ptr<EntitateJoc>>& getEntitati() const;
+  [[nodiscard, maybe_unused]] const Matrice& getMatrice() const;
+  [[nodiscard, maybe_unused]] const Jucator& getJucator() const;
+  [[nodiscard, maybe_unused]] const std::vector<std::shared_ptr<EntitateJoc>>& getEntitati() const;
 
   [[nodiscard]] bool esteGameOver() const;
   [[nodiscard]] int getScorRunda() const;

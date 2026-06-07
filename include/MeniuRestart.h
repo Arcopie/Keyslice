@@ -14,7 +14,7 @@ public:
     bool gestioneazaJoc(Joc& joc);
 
     // inregistreaza o runda terminata (bucla SFML): aduna scorul si scade o viata
-    void inregistreazaRunda(int scorRunda);
+    [[maybe_unused]] void inregistreazaRunda(int scorRunda);
 
     [[nodiscard]] int getVieti() const;
     [[nodiscard]] int getScorTotal() const;
