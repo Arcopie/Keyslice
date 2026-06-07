@@ -37,7 +37,7 @@ public:
 
   // avanseaza jocul cu un pas (spawn + miscare pe baza timerelor), fara render;
   // apelat din bucla SFML in locul lui ruleazaJocul
-  void tick();
+  [[maybe_unused]] void tick();
 
   // getteri read-only pentru renderer
   [[nodiscard]] const Matrice& getMatrice() const;
