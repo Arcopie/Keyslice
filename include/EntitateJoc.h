@@ -24,8 +24,8 @@ public:
     [[nodiscard]] virtual bool esteActiv() const = 0;
     [[nodiscard]] virtual bool esteLA(const Pozitie& p) const = 0;
     [[nodiscard]] virtual char getSimbol() const = 0;
-    // constructor virtual (clone)
-    [[nodiscard]] virtual std::unique_ptr<EntitateJoc> clone() const = 0;
+    // constructor virtual (clone) - pastrat ca parte din ierarhia OOP, fara apelanti directi
+    [[nodiscard]] [[maybe_unused]] virtual std::unique_ptr<EntitateJoc> clone() const = 0;
 
     [[nodiscard]] const Pozitie& getPoz() const;
     static int getContor();

@@ -14,7 +14,7 @@ public:
     [[nodiscard]] bool esteActiv() const override;
     [[nodiscard]] bool esteLA(const Pozitie& p) const override;
     [[nodiscard]] char getSimbol() const override;
-    [[nodiscard]] std::unique_ptr<EntitateJoc> clone() const override;
+    [[nodiscard]] [[maybe_unused]] std::unique_ptr<EntitateJoc> clone() const override;
 
     friend void swap(InamicRapid& a, InamicRapid& b) noexcept;
 protected:

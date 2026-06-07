@@ -54,7 +54,7 @@ void Matrice::afiseaza(const Jucator& jucator,
                     break;
                 }
             }
-            if (!gasit) std::cout << grila[i][j].getSimbol() << " ";
+            if (!gasit) std::cout << grila[i][j] << " ";
         }
         std::cout << "|" << std::endl;
     }
@@ -82,7 +82,7 @@ std::ostream& operator<<(std::ostream& os, const Matrice& m) {
     os << "Matrice " << m.linii << "x" << m.coloane << ":" << std::endl;
     for (int i = 0; i < m.linii; i++) {
         for (int j = 0; j < m.coloane; j++)
-            os << m.grila[i][j].getSimbol() << " ";
+            os << m.grila[i][j] << " ";
         os << std::endl;
     }
     return os;
