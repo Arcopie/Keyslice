@@ -35,6 +35,9 @@ bool MeniuRestart::gestioneazaJoc(Joc &joc) {
   if (joc.esteGameOver()) {
     scorTotal += joc.getScorRunda();
     vieti--;
+    // verifica daca scorul ar intra in clasament inainte de a-l adauga
+    if (clasamentScoruri.esteRecord(joc.getScorRunda()))
+      std::cout << ">>> NOU RECORD! <<<" << std::endl;
     // inregistreaza in clasamente (Clasament<int> si Clasament<double>)
     clasamentScoruri.adauga("Jucator", joc.getScorRunda());
     clasamentTimpi.adauga("Runda " + std::to_string(joc.getRunda()),

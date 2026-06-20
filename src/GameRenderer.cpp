@@ -54,11 +54,14 @@ sf::Color entityColor(const EntitateJoc& e) {
 GameRenderer::GameRenderer(sf::Font& font, sf::RenderWindow& window)
     : font(font), window(window) {}
 
-void GameRenderer::drawHeader(int vieti, int runda, int scorRunda, int scorTotal) {
-    const std::string s = "Vieti: " + std::to_string(vieti) +
+void GameRenderer::drawHeader(int vieti, int runda, int scorRunda, int scorTotal,
+                              bool areScut) {
+    std::string s = "Vieti: " + std::to_string(vieti) +
                           "   Runda: " + std::to_string(runda) +
                           "   Scor: " + std::to_string(scorRunda) +
                           "   Total: " + std::to_string(scorTotal);
+    if (areScut)
+        s += "   [SCUT]";
     putText(window, font, s, static_cast<float>(WINDOW_W) / 2.f, 30.f, 22u,
             hexColor(0xe0e0e0), true);
 
@@ -189,12 +192,17 @@ void GameRenderer::drawStatusBar(
     }
 }
 
-// deseneaza informatiile actualizate de Observer-ul AfisajHUD
 void GameRenderer::drawHud(const AfisajHUD& hud) {
     const std::string pu = hud.getPowerUpActiv();
+    // afiseaza kills total (getTotalOmorati) si power-up activ pe header
+    const std::string killsStr = "Kills: " + std::to_string(hud.getTotalOmorati());
     if (!pu.empty()) {
-        putText(window, font, "Power-up: " + pu, static_cast<float>(WINDOW_W) / 2.f,
-                60.f, 16u, hexColor(0xfff176), true);
+        putText(window, font, killsStr + "   |   Power-up: " + pu,
+                static_cast<float>(WINDOW_W) / 2.f, 60.f, 16u,
+                hexColor(0xfff176), true);
+    } else {
+        putText(window, font, killsStr, static_cast<float>(WINDOW_W) / 2.f,
+                60.f, 16u, hexColor(0xb0bec5), false);
     }
     const std::string banner = hud.getBanner();
     if (!banner.empty()) {
@@ -205,7 +213,7 @@ void GameRenderer::drawHud(const AfisajHUD& hud) {
 
 void GameRenderer::render(const Joc& joc, int vieti, int scorTotal) {
     drawHeader(vieti, joc.getRunda(), joc.getScorRunda(),
-               scorTotal + joc.getScorRunda());
+               scorTotal + joc.getScorRunda(), joc.areJucatorulScut());
     drawGrid(joc.getMatrice(), joc.getJucator(), joc.getEntitati(),
              joc.getPowerups(), joc.getCuloareTema());
     drawStatusBar(joc.getEntitati());

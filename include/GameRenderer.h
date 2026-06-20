@@ -21,7 +21,8 @@ class GameRenderer {
     float gridStartX = 0.f;
     float gridStartY = 0.f;
 
-    void drawHeader(int vieti, int runda, int scorRunda, int scorTotal);
+    void drawHeader(int vieti, int runda, int scorRunda, int scorTotal,
+                    bool areScut);
     void drawGrid(const Matrice& matrice, const Jucator& jucator,
                   const std::vector<std::shared_ptr<EntitateJoc>>& entitati,
                   const std::vector<PowerUp>& powerups, unsigned int culoareTema);

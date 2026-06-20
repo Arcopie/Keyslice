@@ -96,6 +96,7 @@ int ruleazaGui() {
   State stareAnterioara = State::MENU_START; // pentru revenirea din CLASAMENT
   std::unique_ptr<Joc> joc;
   int scorRundaAfisat = 0;
+  bool esteRecordNou = false;
   std::chrono::steady_clock::time_point startRunda;
 
   while (window.isOpen()) {
@@ -138,6 +139,8 @@ int ruleazaGui() {
       joc->tick();
       if (joc->esteGameOver()) {
         scorRundaAfisat = joc->getScorRunda();
+        // verifica daca scorul rundei ar intra in clasament (Clasament<T>::esteRecord)
+        esteRecordNou = meniu.getClasamentScoruri().esteRecord(scorRundaAfisat);
         const double durata = std::chrono::duration<double>(
                                   std::chrono::steady_clock::now() - startRunda)
                                   .count();
@@ -154,7 +157,7 @@ int ruleazaGui() {
                            meniu.getClasamentTimpi());
     } else {
       menu.render(scorRundaAfisat, meniu.getScorTotal(), meniu.getVieti(),
-                  state == State::GAME_OVER);
+                  state == State::GAME_OVER, esteRecordNou);
     }
     window.display();
   }

@@ -133,6 +133,10 @@ bool Joc::verificaColiziune() {
     return false; // scutul a salvat jucatorul
   gameOver = true;
   ruleaza = false;
+  // gestorRunde si gestorPowerUp nu mai sunt necesari dupa game over;
+  // eliminam observatorii inainte de notificare (Pattern Observer complet)
+  eliminaObserver(gestorRunde);
+  eliminaObserver(gestorPowerUp);
   notifica("GAME_OVER", jucator.getScor());
   return true;
 }
@@ -210,6 +214,8 @@ void Joc::afiseazaEcran(int vieti, int scorTotal) const {
             << std::endl;
   if (esteInghetat())
     std::cout << ">>> INGHET activ <<<" << std::endl;
+  if (jucator.areScut())
+    std::cout << ">>> SCUT activ <<<" << std::endl;
 
   // dynamic_cast pentru info specifice MiniBoss
   for (const auto &e : entitati) {
@@ -327,6 +333,7 @@ void Joc::tick() {
 
 // ---- comenzi folosite de observatori ----
 void Joc::setIntervalMiscare(double s) { timer.setIntervalMiscare(s); }
+void Joc::setIntervalSpawn(double s) { timer.setIntervalSpawn(s); }
 void Joc::setMaxInamici(int n) { maxInamici = n; }
 void Joc::setCuloareTema(unsigned int c) { culoareTema = c; }
 
@@ -372,6 +379,7 @@ int Joc::getRunda() const { return runda; }
 
 bool Joc::esteGameOver() const { return gameOver; }
 int Joc::getScorRunda() const { return jucator.getScor(); }
+bool Joc::areJucatorulScut() const { return jucator.areScut(); }
 
 std::ostream &operator<<(std::ostream &os, const Joc &j) {
   os << "Joc: " << j.jucator << " | " << j.timer;

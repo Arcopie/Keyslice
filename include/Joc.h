@@ -65,6 +65,7 @@ public:
 
   // ---- comenzi folosite de observatori (Pattern Observer) ----
   void setIntervalMiscare(double s);
+  void setIntervalSpawn(double s);
   void setMaxInamici(int n);
   void setCuloareTema(unsigned int c);
   void activeazaEfectPowerUp(TipPowerUp tip);
@@ -82,5 +83,6 @@ public:
 
   [[nodiscard]] bool esteGameOver() const;
   [[nodiscard]] int getScorRunda() const;
+  [[nodiscard]] bool areJucatorulScut() const;
   friend std::ostream &operator<<(std::ostream &os, const Joc &j);
 };

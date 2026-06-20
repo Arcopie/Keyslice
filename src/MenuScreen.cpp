@@ -50,7 +50,8 @@ void MenuScreen::drawButton(const std::string& label, const sf::FloatRect& bound
             bounds.position.y + bounds.size.y / 2.f, 22u, textColor, true);
 }
 
-void MenuScreen::render(int scorRunda, int scorTotal, int vieti, bool showScores) {
+void MenuScreen::render(int scorRunda, int scorTotal, int vieti, bool showScores,
+                        bool esteRecord) {
     // panou central pe fundalul deja sters de apelant
     sf::RectangleShape panel({600.f, 440.f});
     panel.setPosition({75.f, 40.f});
@@ -67,6 +68,10 @@ void MenuScreen::render(int scorRunda, int scorTotal, int vieti, bool showScores
                 WINDOW_W / 2.f, 200.f, 24u, hexColor(0xe0e0e0), false);
         putText(window, font, "Scor total:  " + std::to_string(scorTotal),
                 WINDOW_W / 2.f, 240.f, 24u, hexColor(0xe0e0e0), false);
+        if (esteRecord) {
+            putText(window, font, "\xe2\x98\x85 NOU RECORD! \xe2\x98\x85",
+                    WINDOW_W / 2.f, 278.f, 26u, hexColor(0xffd54f), true);
+        }
     } else {
         putText(window, font, "Apasa Restart pentru a incepe", WINDOW_W / 2.f,
                 220.f, 22u, hexColor(0xe0e0e0), false);
@@ -121,8 +126,8 @@ void MenuScreen::renderClasament(const Clasament<int>& scoruri,
             hexColor(0xffffff), true);
 
     // coloana stanga: scoruri (Clasament<int>)
-    putText(window, font, "Top scoruri", 230.f, 150.f, 22u, hexColor(0xffd54f),
-            true);
+    putText(window, font, "Top scoruri (" + std::to_string(scoruri.marime()) + "/5)",
+            230.f, 150.f, 22u, hexColor(0xffd54f), true);
     const auto& sIntrari = scoruri.getIntrari();
     if (sIntrari.empty())
         putText(window, font, "(gol)", 230.f, 190.f, 18u, hexColor(0x999999),
@@ -136,8 +141,8 @@ void MenuScreen::renderClasament(const Clasament<int>& scoruri,
     }
 
     // coloana dreapta: timpi (Clasament<double>)
-    putText(window, font, "Top timpi (s)", 520.f, 150.f, 22u, hexColor(0x80deea),
-            true);
+    putText(window, font, "Top timpi (" + std::to_string(timpi.marime()) + "/5)",
+            520.f, 150.f, 22u, hexColor(0x80deea), true);
     const auto& tIntrari = timpi.getIntrari();
     if (tIntrari.empty())
         putText(window, font, "(gol)", 520.f, 190.f, 18u, hexColor(0x999999),

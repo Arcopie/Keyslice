@@ -21,7 +21,8 @@ class MenuScreen {
 public:
     MenuScreen(sf::Font& font, sf::RenderWindow& window);
 
-    void render(int scorRunda, int scorTotal, int vieti, bool showScores);
+    void render(int scorRunda, int scorTotal, int vieti, bool showScores,
+                bool esteRecord = false);
     MenuAction handleEvent(const sf::Event& event, int vieti);
 
     // ecranul CLASAMENT: afiseaza top 5 scoruri si timpi (clasa sablon)
