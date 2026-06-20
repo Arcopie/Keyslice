@@ -10,7 +10,8 @@
 template <typename T>
 class Clasament {
 public:
-    struct Intrare {
+    class Intrare {
+    public:
         std::string nume;
         T valoare;
         bool operator>(const Intrare& alt) const { return valoare > alt.valoare; }

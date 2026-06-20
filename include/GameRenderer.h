@@ -8,7 +8,7 @@ class Matrice;
 class Jucator;
 class EntitateJoc;
 class AfisajHUD;
-struct PowerUp;
+class PowerUp;
 
 // deseneaza starea jocului (header, grila, status bar) intr-o fereastra SFML.
 // nu detine resursele - primeste referinte la fonta si fereastra partajate.

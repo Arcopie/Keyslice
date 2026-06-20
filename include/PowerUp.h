@@ -4,7 +4,8 @@
 // tipurile de power-up colectabile pe harta (simbol '*')
 enum class TipPowerUp { INGHET, SCUT, DUBLU_SCOR };
 
-struct PowerUp {
+class PowerUp {
+public:
     Pozitie pozitie;
     TipPowerUp tip;
     bool activ = true;
