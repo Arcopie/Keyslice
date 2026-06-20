@@ -39,8 +39,10 @@ public:
         return valoare > intrari.back().valoare;
     }
 
+    // cppcheck-suppress unusedFunction
     [[nodiscard]] const std::vector<Intrare>& getIntrari() const { return intrari; }
 
+    // cppcheck-suppress unusedFunction
     [[nodiscard]] int marime() const { return static_cast<int>(intrari.size()); }
 
     template <typename U>

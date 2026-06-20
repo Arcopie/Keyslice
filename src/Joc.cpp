@@ -379,6 +379,7 @@ int Joc::getRunda() const { return runda; }
 
 bool Joc::esteGameOver() const { return gameOver; }
 int Joc::getScorRunda() const { return jucator.getScor(); }
+// cppcheck-suppress unusedFunction
 bool Joc::areJucatorulScut() const { return jucator.areScut(); }
 
 std::ostream &operator<<(std::ostream &os, const Joc &j) {

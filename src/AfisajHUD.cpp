@@ -24,9 +24,12 @@ void AfisajHUD::onEveniment(const std::string& tip, int valoare) {
 
 int AfisajHUD::getScor() const { return scor; }
 int AfisajHUD::getRunda() const { return runda; }
+// cppcheck-suppress unusedFunction
 int AfisajHUD::getTotalOmorati() const { return totalOmorati; }
+// cppcheck-suppress unusedFunction
 const std::string& AfisajHUD::getPowerUpActiv() const { return powerUpActiv; }
 
+// cppcheck-suppress unusedFunction
 std::string AfisajHUD::getBanner() const {
     if (std::chrono::steady_clock::now() < bannerPanaLa)
         return banner;
