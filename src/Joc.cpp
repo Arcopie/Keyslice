@@ -19,11 +19,10 @@ Joc::Joc()
       inghetPanaLa(std::chrono::steady_clock::now()), ruleaza(false),
       gameOver(false), nextId(1), totalOmorati(0), killsTotal(0),
       urmatorPragMiniBoss(100), urmatorPragRunda(200), runda(1), maxInamici(8),
-      culoareTema(0x29b6f6) {
+      culoareTema(0x29b6f6), hud(std::make_shared<AfisajHUD>()) {
   // Pattern Observer: Joc detine si inregistreaza gestorii care reactioneaza
   gestorRunde = std::make_shared<GestorRunde>(this);
   gestorPowerUp = std::make_shared<GestorPowerUp>(this);
-  hud = std::make_shared<AfisajHUD>();
   adaugaObserver(gestorRunde);
   adaugaObserver(gestorPowerUp);
   adaugaObserver(hud);
