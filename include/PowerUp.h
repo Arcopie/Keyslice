@@ -11,7 +11,7 @@ public:
     bool activ = true;
 
     PowerUp(const Pozitie& poz, TipPowerUp tip) : pozitie(poz), tip(tip) {}
-    [[nodiscard]] char getSimbol() const { return '*'; }
+    [[nodiscard]] static char getSimbol()  { return '*'; }
 };
 
 // numele scurt al efectului (pentru HUD / mesaje)
