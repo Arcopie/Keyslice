@@ -15,6 +15,9 @@ bool Timer::trebuieMiscare() const { return secDe(ultimaMiscare) >= intervalMisc
 void Timer::resetSpawn() { ultimSpawn = std::chrono::steady_clock::now(); }
 void Timer::resetMiscare() { ultimaMiscare = std::chrono::steady_clock::now(); }
 
+void Timer::setIntervalSpawn(double s) { intervalSpawn = s; }
+void Timer::setIntervalMiscare(double s) { intervalMiscare = s; }
+
 std::ostream& operator<<(std::ostream& os, const Timer& t) {
     os << "Timer[spawn la " << t.intervalSpawn
        << "s, miscare la " << t.intervalMiscare << "s]";

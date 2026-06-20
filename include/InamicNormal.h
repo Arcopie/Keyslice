@@ -9,7 +9,6 @@ public:
     InamicNormal& operator=(InamicNormal e); // copy-and-swap
 
     bool aplicaLovitura() override;
-    void muta(int nrLinii, int nrColoane) override;
     [[nodiscard]] bool esteActiv() const override;
     [[nodiscard]] bool esteLA(const Pozitie& p) const override;
     [[nodiscard]] char getSimbol() const override;

@@ -1,5 +1,4 @@
 #include "../include/MiniBoss.h"
-#include <cstdlib>
 #include <utility>
 
 MiniBoss::MiniBoss(int id, const Pozitie& poz, int vietiMaxime)
@@ -7,6 +6,8 @@ MiniBoss::MiniBoss(int id, const Pozitie& poz, int vietiMaxime)
       vietiRamase(vietiMaxime), vietiMaxime(vietiMaxime) {
     if (vietiMaxime < 1)
         throw ExceptieEntitateInvalida("vietiMaxime trebuie sa fie >= 1");
+    // miscare ortogonala aleatoare (Pattern Strategy)
+    setStrategie(std::make_shared<StrategieOrthogonala>());
 }
 
 MiniBoss::MiniBoss(const MiniBoss& e)
@@ -29,19 +30,6 @@ bool MiniBoss::aplicaLovitura() {
     if (vietiRamase <= 0) return false;
     --vietiRamase;
     return vietiRamase == 0;
-}
-
-void MiniBoss::muta(int nrLinii, int nrColoane) {
-    if (vietiRamase <= 0) return;
-    const int directii[][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-    int d = rand() % 4;
-    int linNou = entitate.getPoz().getLin() + directii[d][0];
-    int colNou = entitate.getPoz().getCol() + directii[d][1];
-    if (linNou < 0) linNou = 0;
-    if (linNou >= nrLinii) linNou = nrLinii - 1;
-    if (colNou < 0) colNou = 0;
-    if (colNou >= nrColoane) colNou = nrColoane - 1;
-    entitate.setPoz(Pozitie(linNou, colNou));
 }
 
 bool MiniBoss::esteActiv() const { return vietiRamase > 0; }

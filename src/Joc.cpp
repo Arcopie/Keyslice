@@ -1,7 +1,11 @@
 #include "../include/Joc.h"
+#include "../include/AfisajHUD.h"
+#include "../include/GestorPowerUp.h"
+#include "../include/GestorRunde.h"
 #include "../include/InamicNormal.h"
 #include "../include/InamicPericulos.h"
 #include "../include/InamicRapid.h"
+#include "../include/InamicVanator.h"
 #include "../include/MiniBoss.h"
 #include "../include/Utils.h"
 #include <algorithm>
@@ -11,8 +15,21 @@
 
 Joc::Joc()
     : matrice(4, 10), jucator(Pozitie(1, 5)), timer(5.0, 6.0),
-      ultimSpawnPericulos(std::chrono::steady_clock::now()), ruleaza(false),
-      gameOver(false), nextId(1), totalOmorati(0), urmatorPragMiniBoss(100) {}
+      ultimSpawnPericulos(std::chrono::steady_clock::now()),
+      inghetPanaLa(std::chrono::steady_clock::now()), ruleaza(false),
+      gameOver(false), nextId(1), totalOmorati(0), killsTotal(0),
+      urmatorPragMiniBoss(100), urmatorPragRunda(200), runda(1), maxInamici(8),
+      culoareTema(0x29b6f6) {
+  // Pattern Observer: Joc detine si inregistreaza gestorii care reactioneaza
+  gestorRunde = std::make_shared<GestorRunde>(this);
+  gestorPowerUp = std::make_shared<GestorPowerUp>(this);
+  hud = std::make_shared<AfisajHUD>();
+  adaugaObserver(gestorRunde);
+  adaugaObserver(gestorPowerUp);
+  adaugaObserver(hud);
+}
+
+Joc::~Joc() = default;
 
 // gaseste o pozitie random care nu se suprapune cu jucatorul
 Pozitie Joc::spawneazaPozitie() {
@@ -57,25 +74,68 @@ void Joc::adaugaInamicRapid() {
       std::make_shared<InamicRapid>(nextId++, spawneazaPozitie(), sim));
 }
 
+void Joc::adaugaInamicVanator() {
+  // vanatorul apare dupa scor 150 si urmareste jucatorul
+  if (jucator.getScor() < 150)
+    return;
+  entitati.push_back(
+      std::make_shared<InamicVanator>(nextId++, spawneazaPozitie()));
+}
+
 void Joc::adaugaInamic() {
-  // dynamic_cast pentru a numara doar inamicii normali
-  int nrNormali = 0;
-  for (const auto &e : entitati)
-    if (dynamic_cast<const InamicNormal *>(e.get()) && e->esteActiv())
-      nrNormali++;
-  if (nrNormali >= 8)
+  // functie sablon numaraDeTyp<InamicNormal> in loc de dynamic_cast manual
+  int nrNormali = numaraDeTyp<InamicNormal>(entitati);
+  if (nrNormali >= maxInamici)
     return;
 
-  // la fiecare al 3-lea inamic normal, spawnez unul rapid in loc
-  if (nextId % 3 == 0 && jucator.getScor() >= 50) {
+  if (jucator.getScor() >= 150 && nextId % 4 == 0) {
+    adaugaInamicVanator();
+  } else if (nextId % 3 == 0 && jucator.getScor() >= 50) {
     adaugaInamicRapid();
   } else {
     const char simboluri[] = "EFGHIJKL";
     char sim = simboluri[(nextId - 1) % 8];
-    entitati.push_back(
-        std::make_shared<InamicNormal>(nextId++, spawneazaPozitie(), sim));
+    auto inamic =
+        std::make_shared<InamicNormal>(nextId++, spawneazaPozitie(), sim);
+    // demonstreaza schimbarea strategiei la rulare (Pattern Strategy)
+    if (nextId % 7 == 0)
+      inamic->setStrategie(std::make_shared<StrategieZigzag>());
+    entitati.push_back(inamic);
   }
-};
+}
+
+void Joc::verificaRunda() {
+  while (jucator.getScor() >= urmatorPragRunda) {
+    runda++;
+    urmatorPragRunda += 200;
+    notifica("RUNDA_COMPLETA", runda);
+  }
+}
+
+void Joc::colecteazaPowerUp() {
+  for (auto &pu : powerups) {
+    if (pu.activ && pu.pozitie == jucator.getPoz()) {
+      pu.activ = false;
+      notifica("POWERUP_COLECTAT", static_cast<int>(pu.tip));
+    }
+  }
+  powerups.erase(std::remove_if(powerups.begin(), powerups.end(),
+                                [](const PowerUp &p) { return !p.activ; }),
+                 powerups.end());
+}
+
+// returneaza true daca jucatorul a fost atins fatal (game over);
+// scutul absoarbe o coliziune.
+bool Joc::verificaColiziune() {
+  if (!jucator.atingeEntitate(entitati))
+    return false;
+  if (jucator.consumaScut())
+    return false; // scutul a salvat jucatorul
+  gameOver = true;
+  ruleaza = false;
+  notifica("GAME_OVER", jucator.getScor());
+  return true;
+}
 
 bool Joc::proceseazaTasta(int tasta) {
   if (tasta == 27 || tasta == 24 || tasta == EOF) { // 27=ESC, 24=Ctrl+X
@@ -93,17 +153,20 @@ bool Joc::proceseazaTasta(int tasta) {
   Pozitie pozVeche = jucator.getPoz();
   jucator.teleport(dest);
 
-  // aterizat fix pe o entitate -> game over
-  if (jucator.atingeEntitate(entitati)) {
-    gameOver = true;
-    ruleaza = false;
+  // colecteaza un power-up daca exista pe noua pozitie
+  colecteazaPowerUp();
+
+  // aterizat fix pe o entitate -> game over (daca nu are scut)
+  if (verificaColiziune())
     return true;
-  }
 
   int omorati = jucator.slice(entitati, pozVeche);
   if (omorati > 0) {
     totalOmorati += omorati;
+    killsTotal += omorati;
     curataMortii();
+    notifica("INAMIC_OMORAT", killsTotal);
+    notifica("SCOR_SCHIMBAT", jucator.getScor());
     while (totalOmorati >= 2) {
       adaugaInamicPericulos();
       totalOmorati -= 2;
@@ -114,24 +177,39 @@ bool Joc::proceseazaTasta(int tasta) {
   while (jucator.getScor() >= urmatorPragMiniBoss)
     adaugaMiniBoss();
 
+  // schimbare de runda la fiecare prag (Pattern Observer)
+  verificaRunda();
+
   return true;
 }
 
 void Joc::mutaEntitati() {
+  if (esteInghetat())
+    return; // power-up INGHET: inamicii nu se misca
   for (auto &e : entitati)
-    e->muta(matrice.getLinii(), matrice.getColoane());
+    e->muta(jucator.getPoz(), matrice.getLinii(), matrice.getColoane());
 }
 
 void Joc::afiseazaEcran(int vieti, int scorTotal) const {
   clearScreen();
   std::cout << "SLICE GAME" << std::endl;
-  std::cout << "Vieti: " << vieti << " | Scor runda: " << jucator.getScor()
+  std::cout << "Vieti: " << vieti << " | Runda: " << runda
+            << " | Scor runda: " << jucator.getScor()
             << " | Scor total: " << scorTotal + jucator.getScor()
             << " | Sliceuri: " << jucator.getSliceuri()
             << " | Entitati: " << EntitateJoc::getContor() << std::endl;
-  std::cout << "Apasa litera/cifra = teleportare + slice" << std::endl;
-  std::cout << "ESC / Ctrl+X = iesire | ! = periculos | B = MiniBoss"
+
+  // functie sablon filtreaza<shared_ptr<EntitateJoc>> - entitatile active
+  auto activi = filtreaza<std::shared_ptr<EntitateJoc>>(
+      entitati,
+      [](const std::shared_ptr<EntitateJoc> &e) { return e->esteActiv(); });
+  std::cout << "Apasa litera/cifra = teleportare + slice | active: "
+            << activi.size() << std::endl;
+  std::cout << "ESC / Ctrl+X = iesire | ! = periculos | B = MiniBoss | V = "
+               "Vanator | * = power-up"
             << std::endl;
+  if (esteInghetat())
+    std::cout << ">>> INGHET activ <<<" << std::endl;
 
   // dynamic_cast pentru info specifice MiniBoss
   for (const auto &e : entitati) {
@@ -183,16 +261,12 @@ void Joc::ruleazaJocul(int vieti, int scorTotal) {
       mutaEntitati();
       timer.resetMiscare();
       trebuieRedesnat = true;
-      if (jucator.atingeEntitate(entitati)) {
-        gameOver = true;
-        ruleaza = false;
-      }
+      if (verificaColiziune())
+        break;
     }
 
-    if (jucator.atingeEntitate(entitati)) {
-      gameOver = true;
-      ruleaza = false;
-    }
+    if (verificaColiziune())
+      break;
 
     if (tastaDisponibila()) {
       int tasta = citesteTasta();
@@ -214,7 +288,6 @@ void Joc::ruleazaJocul(int vieti, int scorTotal) {
 }
 
 // un singur pas de joc fara render/input - pentru bucla SFML.
-// reproduce logica din ruleazaJocul (spawn + miscare pe baza timerelor).
 void Joc::tick() {
   if (gameOver)
     return;
@@ -245,16 +318,39 @@ void Joc::tick() {
   if (timer.trebuieMiscare()) {
     mutaEntitati();
     timer.resetMiscare();
-    if (jucator.atingeEntitate(entitati)) {
-      gameOver = true;
-      ruleaza = false;
-    }
+    if (verificaColiziune())
+      return;
   }
 
-  if (jucator.atingeEntitate(entitati)) {
-    gameOver = true;
-    ruleaza = false;
+  verificaColiziune();
+}
+
+// ---- comenzi folosite de observatori ----
+void Joc::setIntervalMiscare(double s) { timer.setIntervalMiscare(s); }
+void Joc::setMaxInamici(int n) { maxInamici = n; }
+void Joc::setCuloareTema(unsigned int c) { culoareTema = c; }
+
+void Joc::activeazaEfectPowerUp(TipPowerUp tip) {
+  switch (tip) {
+  case TipPowerUp::INGHET:
+    inghetPanaLa = std::chrono::steady_clock::now() + std::chrono::seconds(3);
+    break;
+  case TipPowerUp::SCUT:
+    jucator.activeazaScut();
+    break;
+  case TipPowerUp::DUBLU_SCOR:
+    jucator.activeazaDubluScor(5.0);
+    break;
   }
+}
+
+void Joc::spawnPowerUp() {
+  TipPowerUp t = static_cast<TipPowerUp>(rand() % 3);
+  powerups.emplace_back(spawneazaPozitie(), t);
+}
+
+bool Joc::esteInghetat() const {
+  return std::chrono::steady_clock::now() < inghetPanaLa;
 }
 
 // cppcheck-suppress unusedFunction
@@ -265,6 +361,14 @@ const Jucator &Joc::getJucator() const { return jucator; }
 const std::vector<std::shared_ptr<EntitateJoc>> &Joc::getEntitati() const {
   return entitati;
 }
+// cppcheck-suppress unusedFunction
+const std::vector<PowerUp> &Joc::getPowerups() const { return powerups; }
+// cppcheck-suppress unusedFunction
+const AfisajHUD &Joc::getHud() const { return *hud; }
+// cppcheck-suppress unusedFunction
+unsigned int Joc::getCuloareTema() const { return culoareTema; }
+// cppcheck-suppress unusedFunction
+int Joc::getRunda() const { return runda; }
 
 bool Joc::esteGameOver() const { return gameOver; }
 int Joc::getScorRunda() const { return jucator.getScor(); }

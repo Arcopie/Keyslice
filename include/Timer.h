@@ -18,5 +18,9 @@ public:
     void resetSpawn();
     void resetMiscare();
 
+    // configurabil de gestorul de runde (creste dificultatea)
+    void setIntervalSpawn(double s);
+    void setIntervalMiscare(double s);
+
     friend std::ostream& operator<<(std::ostream& os, const Timer& t);
 };

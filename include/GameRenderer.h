@@ -7,6 +7,8 @@ class Joc;
 class Matrice;
 class Jucator;
 class EntitateJoc;
+class AfisajHUD;
+struct PowerUp;
 
 // deseneaza starea jocului (header, grila, status bar) intr-o fereastra SFML.
 // nu detine resursele - primeste referinte la fonta si fereastra partajate.
@@ -19,11 +21,13 @@ class GameRenderer {
     float gridStartX = 0.f;
     float gridStartY = 0.f;
 
-    void drawHeader(int vieti, int scorRunda, int scorTotal);
+    void drawHeader(int vieti, int runda, int scorRunda, int scorTotal);
     void drawGrid(const Matrice& matrice, const Jucator& jucator,
-                  const std::vector<std::shared_ptr<EntitateJoc>>& entitati);
+                  const std::vector<std::shared_ptr<EntitateJoc>>& entitati,
+                  const std::vector<PowerUp>& powerups, unsigned int culoareTema);
     void drawCell(int row, int col, char key, char overlay, sf::Color overlayColor);
     void drawStatusBar(const std::vector<std::shared_ptr<EntitateJoc>>& entitati);
+    void drawHud(const AfisajHUD& hud);
 
 public:
     GameRenderer(sf::Font& font, sf::RenderWindow& window);

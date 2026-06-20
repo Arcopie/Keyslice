@@ -1,5 +1,6 @@
 #include "../include/MenuScreen.h"
 #include "../include/SFMLUtils.h"
+#include <cstdio>
 #include <string>
 
 namespace {
@@ -76,8 +77,9 @@ void MenuScreen::render(int scorRunda, int scorTotal, int vieti, bool showScores
                isRestartHovered && !restartDisabled);
     drawButton("ESC  ->  Iesire", exitBounds(), false, isExitHovered);
 
-    putText(window, font, "Vieti ramase: " + std::to_string(vieti), WINDOW_W / 2.f,
-            462.f, 16u, hexColor(0x666677), false);
+    putText(window, font, "C  ->  Clasament    |    Vieti ramase: " +
+                              std::to_string(vieti),
+            WINDOW_W / 2.f, 462.f, 16u, hexColor(0x666677), false);
 }
 
 MenuAction MenuScreen::handleEvent(const sf::Event& event, int vieti) {
@@ -98,8 +100,70 @@ MenuAction MenuScreen::handleEvent(const sf::Event& event, int vieti) {
     } else if (const auto* kp = event.getIf<sf::Event::KeyPressed>()) {
         if (kp->code == sf::Keyboard::Key::R && vieti > 0)
             return MenuAction::RESTART;
+        if (kp->code == sf::Keyboard::Key::C)
+            return MenuAction::CLASAMENT;
         if (kp->code == sf::Keyboard::Key::Escape)
             return MenuAction::EXIT;
+    }
+    return MenuAction::NONE;
+}
+
+void MenuScreen::renderClasament(const Clasament<int>& scoruri,
+                                 const Clasament<double>& timpi) {
+    sf::RectangleShape panel({600.f, 440.f});
+    panel.setPosition({75.f, 40.f});
+    panel.setFillColor(hexColor(0x2d0a5e));
+    panel.setOutlineThickness(2.f);
+    panel.setOutlineColor(hexColor(0x555566));
+    window.draw(panel);
+
+    putText(window, font, "CLASAMENT", WINDOW_W / 2.f, 90.f, 40u,
+            hexColor(0xffffff), true);
+
+    // coloana stanga: scoruri (Clasament<int>)
+    putText(window, font, "Top scoruri", 230.f, 150.f, 22u, hexColor(0xffd54f),
+            true);
+    const auto& sIntrari = scoruri.getIntrari();
+    if (sIntrari.empty())
+        putText(window, font, "(gol)", 230.f, 190.f, 18u, hexColor(0x999999),
+                false);
+    for (std::size_t i = 0; i < sIntrari.size(); ++i) {
+        const std::string linie = std::to_string(i + 1) + ". " +
+                                  sIntrari[i].nume + "  " +
+                                  std::to_string(sIntrari[i].valoare);
+        putText(window, font, linie, 230.f, 190.f + static_cast<float>(i) * 34.f,
+                18u, hexColor(0xe0e0e0), false);
+    }
+
+    // coloana dreapta: timpi (Clasament<double>)
+    putText(window, font, "Top timpi (s)", 520.f, 150.f, 22u, hexColor(0x80deea),
+            true);
+    const auto& tIntrari = timpi.getIntrari();
+    if (tIntrari.empty())
+        putText(window, font, "(gol)", 520.f, 190.f, 18u, hexColor(0x999999),
+                false);
+    for (std::size_t i = 0; i < tIntrari.size(); ++i) {
+        char buf[16];
+        std::snprintf(buf, sizeof(buf), "%.1f", tIntrari[i].valoare);
+        const std::string linie =
+            std::to_string(i + 1) + ". " + tIntrari[i].nume + "  " + buf;
+        putText(window, font, linie, 520.f, 190.f + static_cast<float>(i) * 34.f,
+                18u, hexColor(0xe0e0e0), false);
+    }
+
+    putText(window, font, "ESC  ->  Inapoi", WINDOW_W / 2.f, 440.f, 18u,
+            hexColor(0x666677), false);
+}
+
+MenuAction MenuScreen::handleEventClasament(const sf::Event& event) {
+    if (const auto* kp = event.getIf<sf::Event::KeyPressed>()) {
+        if (kp->code == sf::Keyboard::Key::Escape ||
+            kp->code == sf::Keyboard::Key::Backspace ||
+            kp->code == sf::Keyboard::Key::Enter)
+            return MenuAction::INAPOI;
+    } else if (const auto* mb = event.getIf<sf::Event::MouseButtonPressed>()) {
+        if (mb->button == sf::Mouse::Button::Left)
+            return MenuAction::INAPOI;
     }
     return MenuAction::NONE;
 }

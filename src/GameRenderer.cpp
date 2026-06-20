@@ -1,14 +1,18 @@
 #include "../include/GameRenderer.h"
+#include "../include/AfisajHUD.h"
 #include "../include/EntitateJoc.h"
 #include "../include/InamicNormal.h"
 #include "../include/InamicPericulos.h"
 #include "../include/InamicRapid.h"
+#include "../include/InamicVanator.h"
 #include "../include/Joc.h"
 #include "../include/Jucator.h"
 #include "../include/Matrice.h"
 #include "../include/MiniBoss.h"
+#include "../include/PowerUp.h"
 #include "../include/Pozitie.h"
 #include "../include/SFMLUtils.h"
+#include "../include/Utils.h"
 #include <algorithm>
 #include <string>
 
@@ -37,6 +41,8 @@ sf::Color entityColor(const EntitateJoc& e) {
         return hexColor(0xef5350);
     if (dynamic_cast<const MiniBoss*>(&e))
         return hexColor(0xce93d8);
+    if (dynamic_cast<const InamicVanator*>(&e))
+        return hexColor(0x26c6da);
     if (dynamic_cast<const InamicRapid*>(&e))
         return hexColor(0x29b6f6);
     if (dynamic_cast<const InamicNormal*>(&e))
@@ -48,10 +54,11 @@ sf::Color entityColor(const EntitateJoc& e) {
 GameRenderer::GameRenderer(sf::Font& font, sf::RenderWindow& window)
     : font(font), window(window) {}
 
-void GameRenderer::drawHeader(int vieti, int scorRunda, int scorTotal) {
+void GameRenderer::drawHeader(int vieti, int runda, int scorRunda, int scorTotal) {
     const std::string s = "Vieti: " + std::to_string(vieti) +
-                          "     Scor runda: " + std::to_string(scorRunda) +
-                          "     Total: " + std::to_string(scorTotal);
+                          "   Runda: " + std::to_string(runda) +
+                          "   Scor: " + std::to_string(scorRunda) +
+                          "   Total: " + std::to_string(scorTotal);
     putText(window, font, s, static_cast<float>(WINDOW_W) / 2.f, 30.f, 22u,
             hexColor(0xe0e0e0), true);
 
@@ -91,7 +98,8 @@ void GameRenderer::drawCell(int row, int col, char key, char overlay,
 
 void GameRenderer::drawGrid(
     const Matrice& matrice, const Jucator& jucator,
-    const std::vector<std::shared_ptr<EntitateJoc>>& entitati) {
+    const std::vector<std::shared_ptr<EntitateJoc>>& entitati,
+    const std::vector<PowerUp>& powerups, unsigned int culoareTema) {
     const int rows = matrice.getLinii();
     const int cols = matrice.getColoane();
 
@@ -126,17 +134,27 @@ void GameRenderer::drawGrid(
                         break;
                     }
                 }
+                // power-up-urile (`*`) au prioritate vizuala doar pe celule libere
+                if (overlay == 0) {
+                    for (const auto& pu : powerups) {
+                        if (pu.activ && pu.pozitie == p) {
+                            overlay = pu.getSimbol();
+                            overlayColor = hexColor(0xfff176);
+                            break;
+                        }
+                    }
+                }
             }
             drawCell(i, j, key, overlay, overlayColor);
         }
     }
 
-    // border exterior (2px) in jurul intregii grile
+    // border exterior (2px) coloreaza tema rundei curente
     sf::RectangleShape border({totalW, totalH});
     border.setPosition({gridStartX, gridStartY});
     border.setFillColor(sf::Color::Transparent);
     border.setOutlineThickness(2.f);
-    border.setOutlineColor(hexColor(0x555566));
+    border.setOutlineColor(hexColor(culoareTema));
     window.draw(border);
 }
 
@@ -161,15 +179,35 @@ void GameRenderer::drawStatusBar(
         putText(window, font, s, static_cast<float>(WINDOW_W) / 2.f, cy, 20u,
                 hexColor(0xce93d8), true);
     } else {
-        putText(window, font,
-                "litera / cifra = teleport + slice    |    ESC = iesire",
-                static_cast<float>(WINDOW_W) / 2.f, cy, 16u, hexColor(0x666677),
-                false);
+        // functie sablon numaraDeTyp<InamicVanator> (RTTI)
+        const int nrVanator = numaraDeTyp<InamicVanator>(entitati);
+        const std::string s =
+            "litera / cifra = teleport + slice   |   Vanatori: " +
+            std::to_string(nrVanator) + "   |   ESC = iesire";
+        putText(window, font, s, static_cast<float>(WINDOW_W) / 2.f, cy, 16u,
+                hexColor(0x666677), false);
+    }
+}
+
+// deseneaza informatiile actualizate de Observer-ul AfisajHUD
+void GameRenderer::drawHud(const AfisajHUD& hud) {
+    const std::string pu = hud.getPowerUpActiv();
+    if (!pu.empty()) {
+        putText(window, font, "Power-up: " + pu, static_cast<float>(WINDOW_W) / 2.f,
+                60.f, 16u, hexColor(0xfff176), true);
+    }
+    const std::string banner = hud.getBanner();
+    if (!banner.empty()) {
+        putText(window, font, banner, static_cast<float>(WINDOW_W) / 2.f,
+                static_cast<float>(WINDOW_H) / 2.f, 56u, hexColor(0xffee58), true);
     }
 }
 
 void GameRenderer::render(const Joc& joc, int vieti, int scorTotal) {
-    drawHeader(vieti, joc.getScorRunda(), scorTotal + joc.getScorRunda());
-    drawGrid(joc.getMatrice(), joc.getJucator(), joc.getEntitati());
+    drawHeader(vieti, joc.getRunda(), joc.getScorRunda(),
+               scorTotal + joc.getScorRunda());
+    drawGrid(joc.getMatrice(), joc.getJucator(), joc.getEntitati(),
+             joc.getPowerups(), joc.getCuloareTema());
     drawStatusBar(joc.getEntitati());
+    drawHud(joc.getHud());
 }

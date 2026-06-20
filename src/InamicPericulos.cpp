@@ -29,8 +29,7 @@ bool InamicPericulos::aExpirat() const {
 // nu poate fi omorat prin slice
 bool InamicPericulos::aplicaLovitura() { return false; }
 
-// stationar - nu se misca
-void InamicPericulos::muta(int, int) {}
+// stationar - nu primeste strategie de miscare, deci ramane pe loc
 
 bool InamicPericulos::esteActiv() const { return !aExpirat(); }
 

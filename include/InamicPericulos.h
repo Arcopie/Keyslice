@@ -14,7 +14,6 @@ public:
     InamicPericulos& operator=(InamicPericulos e);
 
     bool aplicaLovitura() override; // returneaza false - nu poate fi omorat
-    void muta(int nrLinii, int nrColoane) override; // stationar
     [[nodiscard]] bool esteActiv() const override;
     [[nodiscard]] bool esteLA(const Pozitie& p) const override;
     [[nodiscard]] char getSimbol() const override;

@@ -35,11 +35,16 @@ bool MeniuRestart::gestioneazaJoc(Joc &joc) {
   if (joc.esteGameOver()) {
     scorTotal += joc.getScorRunda();
     vieti--;
+    // inregistreaza in clasamente (Clasament<int> si Clasament<double>)
+    clasamentScoruri.adauga("Jucator", joc.getScorRunda());
+    clasamentTimpi.adauga("Runda " + std::to_string(joc.getRunda()),
+                          joc.getScorRunda() / 10.0);
     afiseazaOptiuni(vieti);
     if (vieti <= 0) {
       // nu mai poate da restart
       std::cout << std::endl;
       std::cout << "  SCOR TOTAL FINAL: " << scorTotal << " " << std::endl;
+      std::cout << clasamentScoruri;
       sleepMs(500);
       return false;
     }
@@ -48,14 +53,26 @@ bool MeniuRestart::gestioneazaJoc(Joc &joc) {
   return false;
 }
 
-void MeniuRestart::inregistreazaRunda(int scorRunda) {
+void MeniuRestart::inregistreazaRunda(int scorRunda, double durataSec) {
   scorTotal += scorRunda;
   if (vieti > 0)
     vieti--;
+  clasamentScoruri.adauga("Jucator", scorRunda);
+  if (durataSec > 0.0)
+    clasamentTimpi.adauga("Runda", durataSec);
 }
 
 int MeniuRestart::getVieti() const { return vieti; }
 int MeniuRestart::getScorTotal() const { return scorTotal; }
+
+// cppcheck-suppress unusedFunction
+const Clasament<int> &MeniuRestart::getClasamentScoruri() const {
+  return clasamentScoruri;
+}
+// cppcheck-suppress unusedFunction
+const Clasament<double> &MeniuRestart::getClasamentTimpi() const {
+  return clasamentTimpi;
+}
 
 std::ostream &operator<<(std::ostream &os, const MeniuRestart &m) {
   os << "MeniuRestart[restartari: " << m.nrRestartari << " | vieti: " << m.vieti

@@ -10,7 +10,6 @@ public:
     InamicRapid& operator=(InamicRapid e);
 
     bool aplicaLovitura() override;
-    void muta(int nrLinii, int nrColoane) override; // miscare diagonala
     [[nodiscard]] bool esteActiv() const override;
     [[nodiscard]] bool esteLA(const Pozitie& p) const override;
     [[nodiscard]] char getSimbol() const override;

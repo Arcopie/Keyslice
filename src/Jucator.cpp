@@ -3,9 +3,32 @@
 #include <algorithm>
 
 Jucator::Jucator(const Pozitie& start)
-    : entitate(0, start, "Jucator"), scor(0), nrSliceuri(0) {}
+    : entitate(0, start, "Jucator"), scor(0), nrSliceuri(0),
+      scutActiv(false),
+      dubluScorPanaLa(std::chrono::steady_clock::now()) {}
 
 void Jucator::teleport(const Pozitie& p) { entitate.setPoz(p); }
+
+void Jucator::activeazaScut() { scutActiv = true; }
+
+bool Jucator::areScut() const { return scutActiv; }
+
+bool Jucator::consumaScut() {
+    if (!scutActiv) return false;
+    scutActiv = false;
+    return true;
+}
+
+void Jucator::activeazaDubluScor(double secunde) {
+    dubluScorPanaLa = std::chrono::steady_clock::now() +
+                      std::chrono::milliseconds(static_cast<long long>(secunde * 1000));
+}
+
+bool Jucator::areDubluScor() const {
+    return std::chrono::steady_clock::now() < dubluScorPanaLa;
+}
+
+int Jucator::getMultiplicatorScor() const { return areDubluScor() ? 2 : 1; }
 
 int Jucator::slice(std::vector<std::shared_ptr<EntitateJoc>>& entitati,
                    const Pozitie& pozVeche) {
@@ -22,7 +45,7 @@ int Jucator::slice(std::vector<std::shared_ptr<EntitateJoc>>& entitati,
                 e->getPoz().getCol() >= c1 &&
                 e->getPoz().getCol() <= c2) {
                 if (e->aplicaLovitura()) {
-                    scor += 10;
+                    scor += 10 * getMultiplicatorScor();
                     nrSliceuri++;
                     omorati++;
                 }
@@ -38,7 +61,7 @@ int Jucator::slice(std::vector<std::shared_ptr<EntitateJoc>>& entitati,
                 e->getPoz().getLin() >= r1 &&
                 e->getPoz().getLin() <= r2) {
                 if (e->aplicaLovitura()) {
-                    scor += 10;
+                    scor += 10 * getMultiplicatorScor();
                     nrSliceuri++;
                     omorati++;
                 }

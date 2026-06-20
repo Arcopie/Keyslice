@@ -11,6 +11,7 @@
 #include "include/MenuScreen.h"
 #include "include/SFMLUtils.h"
 #include <SFML/Graphics.hpp>
+#include <chrono>
 #include <cstdlib>
 #include <ctime>
 #include <memory>
@@ -90,21 +91,30 @@ int ruleazaGui() {
   MenuScreen menu(font, window);
   MeniuRestart meniu;
 
-  enum class State { MENU_START, PLAYING, GAME_OVER };
+  enum class State { MENU_START, PLAYING, GAME_OVER, CLASAMENT };
   State state = State::MENU_START;
+  State stareAnterioara = State::MENU_START; // pentru revenirea din CLASAMENT
   std::unique_ptr<Joc> joc;
   int scorRundaAfisat = 0;
+  std::chrono::steady_clock::time_point startRunda;
 
   while (window.isOpen()) {
     while (const std::optional<sf::Event> ev = window.pollEvent()) {
       if (ev->is<sf::Event::Closed>()) {
         window.close();
+      } else if (state == State::CLASAMENT) {
+        if (menu.handleEventClasament(*ev) == MenuAction::INAPOI)
+          state = stareAnterioara;
       } else if (state == State::MENU_START || state == State::GAME_OVER) {
         const MenuAction action = menu.handleEvent(*ev, meniu.getVieti());
         if (action == MenuAction::RESTART) {
           joc = std::make_unique<Joc>();
           scorRundaAfisat = 0;
+          startRunda = std::chrono::steady_clock::now();
           state = State::PLAYING;
+        } else if (action == MenuAction::CLASAMENT) {
+          stareAnterioara = state;
+          state = State::CLASAMENT;
         } else if (action == MenuAction::EXIT) {
           window.close();
         }
@@ -128,7 +138,10 @@ int ruleazaGui() {
       joc->tick();
       if (joc->esteGameOver()) {
         scorRundaAfisat = joc->getScorRunda();
-        meniu.inregistreazaRunda(scorRundaAfisat);
+        const double durata = std::chrono::duration<double>(
+                                  std::chrono::steady_clock::now() - startRunda)
+                                  .count();
+        meniu.inregistreazaRunda(scorRundaAfisat, durata);
         state = State::GAME_OVER;
       }
     }
@@ -136,6 +149,9 @@ int ruleazaGui() {
     window.clear(hexColor(0x0d0d1a));
     if (state == State::PLAYING && joc) {
       renderer.render(*joc, meniu.getVieti(), meniu.getScorTotal());
+    } else if (state == State::CLASAMENT) {
+      menu.renderClasament(meniu.getClasamentScoruri(),
+                           meniu.getClasamentTimpi());
     } else {
       menu.render(scorRundaAfisat, meniu.getScorTotal(), meniu.getVieti(),
                   state == State::GAME_OVER);
