@@ -130,6 +130,7 @@ bool Joc::verificaColiziune() {
     return false;
   if (jucator.consumaScut()) {
     jucator.teleport(spawneazaPozitie()); // muta jucatorul la o pozitie sigura
+    notifica("SCUT_CONSUMAT");            // HUD sterge afisarea scutului
     return false; // scutul a salvat jucatorul
   }
   gameOver = true;

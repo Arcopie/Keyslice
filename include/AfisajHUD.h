@@ -13,6 +13,9 @@ class AfisajHUD : public IObserver {
     std::string powerUpActiv;
     std::string banner;
     std::chrono::steady_clock::time_point bannerPanaLa;
+    // pentru INGHET si DUBLU_SCOR: momentul cand efectul expira
+    std::chrono::steady_clock::time_point powerUpPanaLa;
+    bool powerUpAreDurata; // false pt SCUT (nu expira prin timp, ci prin consum)
 public:
     AfisajHUD();
     void onEveniment(const std::string& tip, int valoare) override;
@@ -20,6 +23,7 @@ public:
     [[nodiscard]] int getScor() const;
     [[nodiscard]] int getRunda() const;
     [[nodiscard]] int getTotalOmorati() const;
-    [[nodiscard]] const std::string& getPowerUpActiv() const;
+    // returneaza numele power-up-ului activ sau "" daca a expirat/fost consumat
+    [[nodiscard]] std::string getPowerUpActiv() const;
     [[nodiscard]] std::string getBanner() const; // "" daca a expirat
 };
