@@ -27,7 +27,8 @@ class GameRenderer {
                   const std::vector<std::shared_ptr<EntitateJoc>>& entitati,
                   const std::vector<PowerUp>& powerups, unsigned int culoareTema);
     void drawCell(int row, int col, char key, char overlay, sf::Color overlayColor);
-    void drawStatusBar(const std::vector<std::shared_ptr<EntitateJoc>>& entitati);
+    void drawStatusBar(const std::vector<std::shared_ptr<EntitateJoc>>& entitati,
+                       int nrVanatori);
     void drawHud(const AfisajHUD& hud);
 
 public:

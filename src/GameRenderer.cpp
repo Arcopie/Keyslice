@@ -162,7 +162,8 @@ void GameRenderer::drawGrid(
 }
 
 void GameRenderer::drawStatusBar(
-    const std::vector<std::shared_ptr<EntitateJoc>>& entitati) {
+    const std::vector<std::shared_ptr<EntitateJoc>>& entitati,
+    int nrVanatori) {
     const MiniBoss* boss = nullptr;
     for (const auto& e : entitati) {
         if (const auto* b = dynamic_cast<const MiniBoss*>(e.get())) {
@@ -175,18 +176,21 @@ void GameRenderer::drawStatusBar(
 
     const float cy =
         static_cast<float>(WINDOW_H - STATUS_H) + static_cast<float>(STATUS_H) / 2.f;
+
+    // sufixul cu numarul de vanatori apare mereu, indiferent de MiniBoss
+    const std::string sufixVanatori =
+        "   |   Vanatori: " + std::to_string(nrVanatori);
+
     if (boss != nullptr) {
         const std::string s = "MiniBoss activ: " +
                               std::to_string(boss->getVietiRamase()) + "/" +
-                              std::to_string(boss->getVietiMaxime()) + " vieti";
+                              std::to_string(boss->getVietiMaxime()) + " vieti" +
+                              sufixVanatori;
         putText(window, font, s, static_cast<float>(WINDOW_W) / 2.f, cy, 20u,
                 hexColor(0xce93d8), true);
     } else {
-        // functie sablon numaraDeTyp<InamicVanator> (RTTI)
-        const int nrVanator = numaraDeTyp<InamicVanator>(entitati);
         const std::string s =
-            "litera / cifra = teleport + slice   |   Vanatori: " +
-            std::to_string(nrVanator) + "   |   ESC = iesire";
+            "litera / cifra = teleport + slice" + sufixVanatori + "   |   ESC = iesire";
         putText(window, font, s, static_cast<float>(WINDOW_W) / 2.f, cy, 16u,
                 hexColor(0x666677), false);
     }
@@ -216,6 +220,6 @@ void GameRenderer::render(const Joc& joc, int vieti, int scorTotal) {
                scorTotal + joc.getScorRunda(), joc.areJucatorulScut());
     drawGrid(joc.getMatrice(), joc.getJucator(), joc.getEntitati(),
              joc.getPowerups(), joc.getCuloareTema());
-    drawStatusBar(joc.getEntitati());
+    drawStatusBar(joc.getEntitati(), joc.getNrVanatori());
     drawHud(joc.getHud());
 }

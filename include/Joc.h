@@ -84,5 +84,6 @@ public:
   [[nodiscard]] bool esteGameOver() const;
   [[nodiscard]] int getScorRunda() const;
   [[nodiscard]] bool areJucatorulScut() const;
+  [[nodiscard]] int getNrVanatori() const;
   friend std::ostream &operator<<(std::ostream &os, const Joc &j);
 };
