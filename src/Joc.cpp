@@ -128,8 +128,10 @@ void Joc::colecteazaPowerUp() {
 bool Joc::verificaColiziune() {
   if (!jucator.atingeEntitate(entitati))
     return false;
-  if (jucator.consumaScut())
+  if (jucator.consumaScut()) {
+    jucator.teleport(spawneazaPozitie()); // muta jucatorul la o pozitie sigura
     return false; // scutul a salvat jucatorul
+  }
   gameOver = true;
   ruleaza = false;
   // gestorRunde si gestorPowerUp nu mai sunt necesari dupa game over;
@@ -159,10 +161,8 @@ bool Joc::proceseazaTasta(int tasta) {
   // colecteaza un power-up daca exista pe noua pozitie
   colecteazaPowerUp();
 
-  // aterizat fix pe o entitate -> game over (daca nu are scut)
-  if (verificaColiziune())
-    return true;
-
+  // slice-ul omoara inamicii de pe traseul teleportarii INAINTE de verificarea coliziunii;
+  // astfel inamicii normali (un singur hit) mor inainte ca scutul sa fie nevoit sa intervina
   int omorati = jucator.slice(entitati, pozVeche);
   if (omorati > 0) {
     totalOmorati += omorati;
@@ -175,6 +175,11 @@ bool Joc::proceseazaTasta(int tasta) {
       totalOmorati -= 2;
     }
   }
+
+  // daca a supravietuit un inamic pe pozitia jucatorului (MiniBoss, InamicPericulos etc.),
+  // scutul absoarbe lovitura si teleporteaza jucatorul la siguranta
+  if (verificaColiziune())
+    return true;
 
   // spawn mini-boss la fiecare prag de 100 puncte
   while (jucator.getScor() >= urmatorPragMiniBoss)
@@ -262,15 +267,17 @@ void Joc::ruleazaJocul(int vieti, int scorTotal) {
     if ((int)entitati.size() != inainte)
       trebuieRedesnat = true;
 
+    bool coliziuneVerificata = false;
     if (timer.trebuieMiscare()) {
       mutaEntitati();
       timer.resetMiscare();
       trebuieRedesnat = true;
       if (verificaColiziune())
         break;
+      coliziuneVerificata = true;
     }
 
-    if (verificaColiziune())
+    if (!coliziuneVerificata && verificaColiziune())
       break;
 
     if (tastaDisponibila()) {
@@ -325,9 +332,9 @@ void Joc::tick() {
     timer.resetMiscare();
     if (verificaColiziune())
       return;
+  } else {
+    verificaColiziune();
   }
-
-  verificaColiziune();
 }
 
 // ---- comenzi folosite de observatori ----
@@ -380,6 +387,7 @@ bool Joc::esteGameOver() const { return gameOver; }
 int Joc::getScorRunda() const { return jucator.getScor(); }
 // cppcheck-suppress unusedFunction
 bool Joc::areJucatorulScut() const { return jucator.areScut(); }
+int Joc::getNrVanatori() const { return numaraDeTyp<InamicVanator>(entitati); }
 
 std::ostream &operator<<(std::ostream &os, const Joc &j) {
   os << "Joc: " << j.jucator << " | " << j.timer;
