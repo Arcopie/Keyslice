@@ -387,7 +387,7 @@ const AfisajHUD &Joc::getHud() const { return *hud; }
 unsigned int Joc::getCuloareTema() const { return culoareTema; }
 // cppcheck-suppress unusedFunction
 int Joc::getRunda() const { return runda; }
-
+// cppcheck-suppress unusedFunction
 void Joc::setScorAccumulat(int s) { scorAccumulat = s; }
 bool Joc::esteGameOver() const { return gameOver; }
 int Joc::getScorRunda() const { return jucator.getScor(); }
