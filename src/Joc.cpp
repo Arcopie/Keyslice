@@ -388,6 +388,7 @@ bool Joc::esteGameOver() const { return gameOver; }
 int Joc::getScorRunda() const { return jucator.getScor(); }
 // cppcheck-suppress unusedFunction
 bool Joc::areJucatorulScut() const { return jucator.areScut(); }
+// cppcheck-suppress unusedFunction
 int Joc::getNrVanatori() const { return numaraDeTyp<InamicVanator>(entitati); }
 
 std::ostream &operator<<(std::ostream &os, const Joc &j) {
