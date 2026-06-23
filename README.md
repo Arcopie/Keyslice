@@ -5,6 +5,13 @@ Slice who? Your enemies, there's a lot of 'em. The game area consists of blocks 
 In order to stay alive you need to be moving constantly, they kill you only if you're standing still.
 Enemies will approach you along the tiles of the game, some can be killed and some need to be dodged.
 
+How the game works: The gameboard is your entire keyboard, a matrix in wich every square is a character on your keyboard.
+To rack up points you must eliminate enemies. Example: To kill an enemy on row 2 column 5 (2,5) you must "slice"(teleport)
+from (2,X) to (2,Y) where X<5<Y or X>5>Y. You can also kill the same enemy by slicing on the same column and changing the rows, ex:
+from (X,5) to (Y,5) where X<2<Y or X>2>Y.
+
+There are also different types of enemies moving differently across the board, some you cannot slice and just have to avoid. There's also a MiniBoss who needs more slices in order to be defeated. Watch for the power ups they come in handy.
+
 ### Folosiți template-ul corespunzător grupei voastre!
 
 | Laborant  | Link template                                |
