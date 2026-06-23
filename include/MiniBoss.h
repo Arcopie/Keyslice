@@ -13,6 +13,7 @@ public:
     MiniBoss& operator=(MiniBoss e);
 
     bool aplicaLovitura() override; // decrementeaza vietiRamase
+    [[nodiscard]] int getScorKill() const override; // returneaza 30
     [[nodiscard]] bool esteActiv() const override;
     [[nodiscard]] bool esteLA(const Pozitie& p) const override;
     [[nodiscard]] char getSimbol() const override;

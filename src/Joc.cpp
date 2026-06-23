@@ -19,7 +19,7 @@ Joc::Joc()
       inghetPanaLa(std::chrono::steady_clock::now()), ruleaza(false),
       gameOver(false), nextId(1), totalOmorati(0), killsTotal(0),
       urmatorPragMiniBoss(100), urmatorPragRunda(200), runda(1), maxInamici(8),
-      culoareTema(0x29b6f6), hud(std::make_shared<AfisajHUD>()) {
+      culoareTema(0x29b6f6), scorAccumulat(0), hud(std::make_shared<AfisajHUD>()) {
   // Pattern Observer: Joc detine si inregistreaza gestorii care reactioneaza
   gestorRunde = std::make_shared<GestorRunde>(this);
   gestorPowerUp = std::make_shared<GestorPowerUp>(this);
@@ -175,6 +175,9 @@ bool Joc::proceseazaTasta(int tasta) {
       adaugaInamicPericulos();
       totalOmorati -= 2;
     }
+    // spawn vanator la fiecare 3 killuri daca scorul total depaseste 100
+    if ((jucator.getScor() + scorAccumulat) > 100 && killsTotal % 3 == 0)
+      entitati.push_back(std::make_shared<InamicVanator>(nextId++, spawneazaPozitie()));
   }
 
   // daca a supravietuit un inamic pe pozitia jucatorului (MiniBoss, InamicPericulos etc.),
@@ -237,6 +240,7 @@ void Joc::afiseazaEcran(int vieti, int scorTotal) const {
 }
 
 void Joc::ruleazaJocul(int vieti, int scorTotal) {
+  scorAccumulat = scorTotal;
   srand((unsigned)time(nullptr));
   ruleaza = true;
   gameOver = false;
@@ -384,6 +388,7 @@ unsigned int Joc::getCuloareTema() const { return culoareTema; }
 // cppcheck-suppress unusedFunction
 int Joc::getRunda() const { return runda; }
 
+void Joc::setScorAccumulat(int s) { scorAccumulat = s; }
 bool Joc::esteGameOver() const { return gameOver; }
 int Joc::getScorRunda() const { return jucator.getScor(); }
 // cppcheck-suppress unusedFunction

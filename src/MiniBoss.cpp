@@ -32,6 +32,8 @@ bool MiniBoss::aplicaLovitura() {
     return vietiRamase == 0;
 }
 
+int MiniBoss::getScorKill() const { return 30; }
+
 bool MiniBoss::esteActiv() const { return vietiRamase > 0; }
 
 bool MiniBoss::esteLA(const Pozitie& p) const {

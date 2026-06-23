@@ -34,6 +34,7 @@ class Joc : public ISubiect {
   int runda;
   int maxInamici;          // configurat de GestorRunde
   unsigned int culoareTema; // configurat de GestorRunde
+  int scorAccumulat;        // scorul din rundele anterioare (setat din exterior)
 
   // observatori concreti (detinuti de Joc)
   std::shared_ptr<GestorRunde> gestorRunde;
@@ -81,6 +82,7 @@ public:
   [[nodiscard, maybe_unused]] unsigned int getCuloareTema() const;
   [[nodiscard, maybe_unused]] int getRunda() const;
 
+  void setScorAccumulat(int s); // apelat din bucla SFML inainte de prima rulare
   [[nodiscard]] bool esteGameOver() const;
   [[nodiscard]] int getScorRunda() const;
   [[nodiscard]] bool areJucatorulScut() const;

@@ -22,6 +22,8 @@ public:
 
     // functie virtuala pura specifica temei - incearca sa omoare entitatea
     virtual bool aplicaLovitura() = 0;
+    // punctele acordate la omorierea acestei entitati (implicit 10, MiniBoss 30)
+    [[nodiscard]] virtual int getScorKill() const;
     [[nodiscard]] virtual bool esteActiv() const = 0;
     [[nodiscard]] virtual bool esteLA(const Pozitie& p) const = 0;
     [[nodiscard]] virtual char getSimbol() const = 0;

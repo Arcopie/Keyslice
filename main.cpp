@@ -110,6 +110,7 @@ int ruleazaGui() {
         const MenuAction action = menu.handleEvent(*ev, meniu.getVieti());
         if (action == MenuAction::RESTART) {
           joc = std::make_unique<Joc>();
+          joc->setScorAccumulat(meniu.getScorTotal());
           scorRundaAfisat = 0;
           startRunda = std::chrono::steady_clock::now();
           state = State::PLAYING;

@@ -45,7 +45,7 @@ int Jucator::slice(std::vector<std::shared_ptr<EntitateJoc>>& entitati,
                 e->getPoz().getCol() >= c1 &&
                 e->getPoz().getCol() <= c2) {
                 if (e->aplicaLovitura()) {
-                    scor += 10 * getMultiplicatorScor();
+                    scor += e->getScorKill() * getMultiplicatorScor();
                     nrSliceuri++;
                     omorati++;
                 }
@@ -61,7 +61,7 @@ int Jucator::slice(std::vector<std::shared_ptr<EntitateJoc>>& entitati,
                 e->getPoz().getLin() >= r1 &&
                 e->getPoz().getLin() <= r2) {
                 if (e->aplicaLovitura()) {
-                    scor += 10 * getMultiplicatorScor();
+                    scor += e->getScorKill() * getMultiplicatorScor();
                     nrSliceuri++;
                     omorati++;
                 }

@@ -3,6 +3,8 @@
 
 int EntitateJoc::contor = 0;
 
+int EntitateJoc::getScorKill() const { return 10; }
+
 EntitateJoc::EntitateJoc(int id, const Pozitie& poz, const char* tip)
     : entitate(id, poz, tip) {
     contor++;
